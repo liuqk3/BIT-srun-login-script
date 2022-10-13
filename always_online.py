@@ -1,5 +1,6 @@
 import os
 import time
+import argparse
 from BitSrunLogin.LoginManager import LoginManager
 
 def is_connect_internet(testip):
