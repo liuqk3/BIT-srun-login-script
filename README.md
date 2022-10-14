@@ -24,7 +24,7 @@ nohup python always_online.py --username xxx --password xxx &
 参考 https://zhuanlan.zhihu.com/p/523973210
 1. 创建一个sh脚本，命名为`run_bit_login.sh`，其内容为：
 ```
-nohup python3 /abs/path/to/always_online.py --username xxx --password xxx &
+nohup python3 /abs/path/to/always_online.py --username xxx --password xxx
 ```
 2. 设置脚本权限：
 ```
@@ -36,20 +36,27 @@ sudo vim /lib/systemd/system/bit_auto_login.service
 ```
 其内容为：
 ```
-[Unit]
-Description=scratch service
-After=network.target network-online.target syslog.target
-Wants=network.target network-online.target
-
-[Service]
-Type=simple
-
-#launch the service, must be the abs path
+[Unit] 
+Description=Auto login into the internet in BIT
+# the dependency
+# Wants=network-online.target 
+# After=network-online.target 
+After=multi-user.target
+ 
+[Service] 
+Type=simple 
+ExecStart=bash /abs/path/to/run_bit_login.sh 
+# or we can start this service direcly with commandline, no bash file required
+# ExecStart=nohup python3 /abs/path/to/always_online.py --username xxx --password xxx
 ExecStart=bash /abs/path/to/run_bit_login.sh
-
-[Install]
+ExecReload=/bin/kill -HUP $MAINPID
+RestartSec=5s 
+Restart=on-failure 
+ 
+[Install] 
 WantedBy=multi-user.target
 ```
+
 
 4. 添加开机自启动：
 ```
